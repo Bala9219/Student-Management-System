@@ -1,7 +1,10 @@
 package com.student.student_management_system.service;
 
+import com.student.student_management_system.dto.StudentRequestDTO;
+import com.student.student_management_system.dto.StudentResponseDTO;
 import com.student.student_management_system.exception.DuplicateMailException;
 import com.student.student_management_system.exception.StudentNotFoundException;
+import com.student.student_management_system.mapper.StudentMapper;
 import com.student.student_management_system.model.Student;
 import com.student.student_management_system.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,43 +20,50 @@ public class StudentServiceImpl implements StudentService{
     private final StudentRepository studentRepository;
 
     @Override
-    public Student createStudent(Student student) {
-        if(studentRepository.existsByEmail(student.getEmail())){
-            throw new DuplicateMailException(student.getEmail());
+    public StudentResponseDTO createStudent(StudentRequestDTO dto) {
+        if(studentRepository.existsByEmail(dto.getEmail())){
+            throw new DuplicateMailException(dto.getEmail());
         }
-        return studentRepository.save(student);
+        Student student = StudentMapper.toEntity(dto);
+        return StudentMapper.toDTO(studentRepository.save(student));
     }
 
     @Override
-    public Page<Student> getAllStudents(Pageable pageable) {
-        return studentRepository.findAll(pageable);
+    public Page<StudentResponseDTO> getAllStudents(Pageable pageable) {
+        return studentRepository.findAll(pageable)
+                .map(StudentMapper::toDTO);
     }
 
     @Override
-    public Student getStudentById(Long id) {
-        return studentRepository.findById(id)
+    public StudentResponseDTO getStudentById(Long id) {
+        Student student = studentRepository.findById(id)
                 .orElseThrow(() -> new StudentNotFoundException(id));
+
+        return StudentMapper.toDTO(student);
     }
 
     @Override
-    public Student updateStudent(Long id, Student student) {
-        Student existing = getStudentById(id);
+    public StudentResponseDTO updateStudent(Long id, StudentRequestDTO dto) {
+        Student existing = studentRepository.findById(id)
+                .orElseThrow(() -> new StudentNotFoundException(id));
 
-        existing.setName(student.getName());
-        //existing.setEmail(student.getEmail());
-        if(!existing.getEmail().equals(student.getEmail()) && studentRepository.existsByEmail(student.getEmail())){
-            throw new DuplicateMailException(student.getEmail());
+        if(!existing.getEmail().equals(dto.getEmail()) && studentRepository.existsByEmail(dto.getEmail())){
+            throw new DuplicateMailException(dto.getEmail());
         }
-        existing.setEmail(student.getEmail());
-        existing.setAge(student.getAge());
-        existing.setCourse(student.getCourse());
 
-        return studentRepository.save(existing);
+        existing.setName(dto.getName());
+        existing.setEmail(dto.getEmail());
+        existing.setAge(dto.getAge());
+        existing.setCourse(dto.getCourse());
+
+        return StudentMapper.toDTO(studentRepository.save(existing));
     }
 
     @Override
     public void deleteStudent(Long id) {
-        Student existing = getStudentById(id);
-        studentRepository.delete(existing);
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new StudentNotFoundException(id));
+
+        studentRepository.delete(student);
     }
 }

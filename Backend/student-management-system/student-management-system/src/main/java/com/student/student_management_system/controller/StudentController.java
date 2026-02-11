@@ -1,5 +1,7 @@
 package com.student.student_management_system.controller;
 
+import com.student.student_management_system.dto.StudentRequestDTO;
+import com.student.student_management_system.dto.StudentResponseDTO;
 import com.student.student_management_system.model.Student;
 import com.student.student_management_system.service.StudentService;
 import jakarta.validation.Valid;
@@ -19,24 +21,24 @@ public class StudentController {
     private final StudentService studentService;
 
     @PostMapping
-    public Student createStudent(@Valid @RequestBody Student student){
-        return studentService.createStudent(student);
+    public StudentResponseDTO createStudent(@Valid @RequestBody StudentRequestDTO dto){
+        return studentService.createStudent(dto);
 
     }
 
     @GetMapping
-    public Page<Student> getAllStudents(@PageableDefault(page = 0, size = 5, sort = "age")Pageable pageable){
+    public Page<StudentResponseDTO> getAllStudents(@PageableDefault(page = 0, size = 5, sort = "age")Pageable pageable){
         return studentService.getAllStudents(pageable);
     }
 
     @GetMapping("/{id}")
-    public Student getStudentById(@PathVariable Long id){
+    public StudentResponseDTO getStudentById(@PathVariable Long id){
         return studentService.getStudentById(id);
     }
 
     @PutMapping("/{id}")
-    public Student updateStudent(@Valid @PathVariable Long id, @RequestBody Student student){
-        return studentService.updateStudent(id, student);
+    public StudentResponseDTO updateStudent(@PathVariable Long id, @Valid @RequestBody StudentRequestDTO dto){
+        return studentService.updateStudent(id, dto);
     }
 
     @DeleteMapping("/{id}")
