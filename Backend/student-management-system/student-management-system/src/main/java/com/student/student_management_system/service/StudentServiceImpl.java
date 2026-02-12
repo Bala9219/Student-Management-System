@@ -66,4 +66,16 @@ public class StudentServiceImpl implements StudentService{
 
         studentRepository.delete(student);
     }
+
+    @Override
+    public Page<StudentResponseDTO> searchStudents(String keyword, Pageable pageable) {
+        Page<Student> students;
+        if(keyword.contains("@")){
+            students = studentRepository.findByEmailContainingIgnoreCase(keyword, pageable);
+        } else {
+          students = studentRepository.findByNameContainingIgnoreCase(keyword, pageable);
+        }
+
+        return students.map(StudentMapper::toDTO);
+    }
 }

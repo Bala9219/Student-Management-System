@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,8 +45,14 @@ public class StudentController {
     }
 
     @DeleteMapping("/{id}")
-    public String deleteStudent(@PathVariable Long id){
+    public ResponseEntity<Void> deleteStudent(@PathVariable Long id){
         studentService.deleteStudent(id);
-        return "Student deleted successfully.";
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/search")
+    public Page<StudentResponseDTO> searchStudents(@RequestParam String keyword,
+                                                   @PageableDefault(size = 5, sort = "name")Pageable pageable){
+        return studentService.searchStudents(keyword, pageable);
     }
 }

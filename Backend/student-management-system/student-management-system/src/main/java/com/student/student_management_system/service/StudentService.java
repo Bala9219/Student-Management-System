@@ -18,4 +18,6 @@ public interface StudentService {
     StudentResponseDTO updateStudent(Long id, StudentRequestDTO dto);
 
     void deleteStudent(Long id);
+
+    Page<StudentResponseDTO> searchStudents(String keyword, Pageable pageable);
 }
