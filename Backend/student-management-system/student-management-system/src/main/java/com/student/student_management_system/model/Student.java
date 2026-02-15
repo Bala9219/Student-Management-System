@@ -35,7 +35,7 @@ public class Student {
     @Column(nullable = false)
     private Integer age;
 
-    @NotBlank(message = "Course is required")
-    @Column(nullable = false)
-    private String course;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "course_id", nullable = false)
+    private Course course;
 }

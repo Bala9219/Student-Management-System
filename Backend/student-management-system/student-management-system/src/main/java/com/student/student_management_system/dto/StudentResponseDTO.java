@@ -13,6 +13,6 @@ public class StudentResponseDTO {
     private String name;
     private String email;
     private Integer age;
-    private String course;
-
+    private Long courseId;
+    private String courseTitle;
 }

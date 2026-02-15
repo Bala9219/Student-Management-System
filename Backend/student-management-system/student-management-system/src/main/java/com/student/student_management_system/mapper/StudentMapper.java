@@ -11,7 +11,6 @@ public class StudentMapper {
                 .name(dto.getName())
                 .email(dto.getEmail())
                 .age(dto.getAge())
-                .course(dto.getCourse())
                 .build();
     }
 
@@ -21,7 +20,8 @@ public class StudentMapper {
                 .name(student.getName())
                 .email(student.getEmail())
                 .age(student.getAge())
-                .course(student.getCourse())
+                .courseId(student.getCourse().getId())
+                .courseTitle(student.getCourse().getTitle())
                 .build();
     }
 }

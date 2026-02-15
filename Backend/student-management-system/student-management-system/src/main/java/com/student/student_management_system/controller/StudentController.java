@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/students")
@@ -24,24 +25,35 @@ public class StudentController {
     private final StudentService studentService;
 
     @PostMapping
-    public StudentResponseDTO createStudent(@Valid @RequestBody StudentRequestDTO dto){
-        return studentService.createStudent(dto);
-
+    public ResponseEntity<StudentResponseDTO> createStudent(@Valid @RequestBody StudentRequestDTO dto){
+        StudentResponseDTO created = studentService.createStudent(dto);
+        return ResponseEntity.ok(created);
     }
 
     @GetMapping
-    public Page<StudentResponseDTO> getAllStudents(@PageableDefault(page = 0, size = 5, sort = "age")Pageable pageable){
-        return studentService.getAllStudents(pageable);
+    public ResponseEntity<Map<String, Object>> getAllStudents(@PageableDefault(page = 0, size = 10, sort = "age")Pageable pageable){
+        Page<StudentResponseDTO> page = studentService.getAllStudents(pageable);
+
+        Map<String, Object> response = Map.of(
+                "students", page.getContent(),
+                "currentPage", page.getNumber(),
+                "totalItems", page.getTotalElements(),
+                "totalPages", page.getTotalPages(),
+                "pageSize", page.getSize()
+        );
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
-    public StudentResponseDTO getStudentById(@PathVariable Long id){
-        return studentService.getStudentById(id);
+    public ResponseEntity<StudentResponseDTO> getStudentById(@PathVariable Long id){
+        StudentResponseDTO getStudent =  studentService.getStudentById(id);
+        return ResponseEntity.ok(getStudent);
     }
 
     @PutMapping("/{id}")
-    public StudentResponseDTO updateStudent(@PathVariable Long id, @Valid @RequestBody StudentRequestDTO dto){
-        return studentService.updateStudent(id, dto);
+    public ResponseEntity<StudentResponseDTO> updateStudent(@PathVariable Long id, @Valid @RequestBody StudentRequestDTO dto){
+        StudentResponseDTO updated = studentService.updateStudent(id, dto);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
@@ -51,8 +63,17 @@ public class StudentController {
     }
 
     @GetMapping("/search")
-    public Page<StudentResponseDTO> searchStudents(@RequestParam String keyword,
-                                                   @PageableDefault(size = 5, sort = "name")Pageable pageable){
-        return studentService.searchStudents(keyword, pageable);
+    public ResponseEntity<Map<String, Object>> searchStudents(@RequestParam String keyword,
+                                                   @PageableDefault(size = 10, sort = "name")Pageable pageable){
+        Page<StudentResponseDTO> page = studentService.searchStudents(keyword, pageable);
+
+        Map<String, Object> response = Map.of(
+                "students", page.getContent(),
+                "currentPage", page.getNumber(),
+                "totalItems", page.getTotalElements(),
+                "totalPages", page.getTotalPages(),
+                "pageSize", page.getSize()
+        );
+        return ResponseEntity.ok(response);
     }
 }

@@ -24,6 +24,6 @@ public class StudentRequestDTO {
     @NotNull(message = "Age is required")
     private Integer age;
 
-    @NotBlank(message = "Course is required")
-    private String course;
+    @NotNull(message = "Course Id cannot be null")
+    private Long courseId;
 }

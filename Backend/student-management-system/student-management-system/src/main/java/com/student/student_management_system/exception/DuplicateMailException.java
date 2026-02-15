@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class DuplicateMailException extends RuntimeException{
 
     public DuplicateMailException(String email){
+
         super("Email already exists: " + email);
     }
 }
