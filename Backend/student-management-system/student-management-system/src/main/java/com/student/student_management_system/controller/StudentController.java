@@ -48,6 +48,7 @@ public class StudentController {
     public ResponseEntity<StudentResponseDTO> getStudentById(@PathVariable Long id){
         StudentResponseDTO getStudent =  studentService.getStudentById(id);
         return ResponseEntity.ok(getStudent);
+//        return ResponseEntity.ok(studentService.getStudentById(id)); //Both works fine...
     }
 
     @PutMapping("/{id}")
