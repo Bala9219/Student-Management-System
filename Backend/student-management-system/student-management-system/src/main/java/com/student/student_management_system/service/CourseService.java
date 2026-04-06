@@ -11,11 +11,11 @@ public interface CourseService {
 
     Page<CourseResponseDTO> getAllCourses(Pageable pageable);
 
-    CourseResponseDTO getCourseById(Long id);
+    CourseResponseDTO findCourseById(Long id);
 
     CourseResponseDTO updateCourse(Long id, CourseRequestDTO request);
 
-    void deleteStudent(Long id);
+    void deleteCourse(Long id);
 
     Page<CourseResponseDTO> searchAllCourses(String keyword, Pageable pageable);
 }

@@ -96,4 +96,20 @@ public class StudentServiceImpl implements StudentService{
 
         return students.map(StudentMapper::toDTO);
     }
+
+    @Override
+    public void enrollCourse(Long studentId, Long courseId) {
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new StudentNotFoundException(studentId));
+
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new CourseNotFoundException(courseId));
+
+        if(student.getCourses().contains(course)){
+            throw new RuntimeException("Student already enrolled in this course");
+        }
+
+        student.getCourses().add(course);
+        studentRepository.save(student);
+    }
 }

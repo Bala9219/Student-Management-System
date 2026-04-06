@@ -2,7 +2,9 @@ package com.student.student_management_system.service;
 
 import com.student.student_management_system.dto.CourseRequestDTO;
 import com.student.student_management_system.dto.CourseResponseDTO;
+import com.student.student_management_system.exception.CourseNotFoundException;
 import com.student.student_management_system.exception.DuplicateCourseException;
+import com.student.student_management_system.exception.InsufficientResourcesException;
 import com.student.student_management_system.mapper.CourseMapper;
 import com.student.student_management_system.model.Course;
 import com.student.student_management_system.repository.CourseRepository;
@@ -28,26 +30,56 @@ public class CourseServiceImpl implements CourseService{
 
     @Override
     public Page<CourseResponseDTO> getAllCourses(Pageable pageable) {
-        return null;
+        return courseRepository.findAll(pageable)
+                .map(CourseMapper::toDTO);
     }
 
     @Override
-    public CourseResponseDTO getCourseById(Long id) {
-        return null;
+    public CourseResponseDTO findCourseById(Long id) {
+        Course course = courseRepository.findById(id)
+                .orElseThrow(() -> new CourseNotFoundException(id));
+
+        return CourseMapper.toDTO(course);
     }
 
     @Override
     public CourseResponseDTO updateCourse(Long id, CourseRequestDTO request) {
-        return null;
+        Course existing = courseRepository.findById(id)
+                .orElseThrow(() -> new CourseNotFoundException(id));
+
+        if(!existing.getTitle().equals(request.getTitle()) &&
+                courseRepository.existsByTitle(request.getTitle())){
+            throw new DuplicateCourseException(request.getTitle());
+        }
+
+        existing.setTitle(request.getTitle());
+        existing.setDuration(request.getDuration());
+        existing.setFee(request.getFee());
+
+        return CourseMapper.toDTO(courseRepository.save(existing));
     }
 
     @Override
-    public void deleteStudent(Long id) {
+    public void deleteCourse(Long id) {
+        Course course = courseRepository.findById(id)
+                .orElseThrow(() -> new CourseNotFoundException(id));
 
+        courseRepository.delete(course);
     }
 
     @Override
     public Page<CourseResponseDTO> searchAllCourses(String keyword, Pageable pageable) {
-        return null;
+        if(keyword==null || keyword.trim().length()<3){
+            throw new InsufficientResourcesException("Search keyword must be at least 3 characters long.");
+        }
+
+        Page<Course> courses;
+        if(keyword.matches(".*\\d.*")){
+            courses = courseRepository.findByDurationContainingIgnoringCase(keyword, pageable);
+        }else{
+            courses = courseRepository.findByTitleContainingIgnoringCase(keyword, pageable);
+        }
+
+        return courses.map(CourseMapper::toDTO);
     }
 }

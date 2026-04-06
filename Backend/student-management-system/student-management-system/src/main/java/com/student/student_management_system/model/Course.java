@@ -5,6 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "courses")
 
@@ -20,7 +23,7 @@ public class Course {
     private Long id;
 
     @NotBlank(message = "Title field is required")
-    @Column(nullable = false)
+    @Column(unique = true)
     private String title;
 
     @NotBlank(message = "Duration of the course is required")
@@ -30,5 +33,8 @@ public class Course {
     @NotNull(message = "fee value is required and cannot be null")
     @Column(nullable = false)
     private Long fee;
+
+    @ManyToMany(mappedBy = "courses")
+    private Set<Student> students = new HashSet<>();
 
 }
