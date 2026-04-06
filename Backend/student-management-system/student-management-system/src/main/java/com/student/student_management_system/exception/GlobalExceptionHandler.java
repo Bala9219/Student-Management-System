@@ -43,4 +43,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleCourseNotFound(CourseNotFoundException exception){
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(DuplicateCourseException.class)
+    public ResponseEntity<Map<String, String>> handleDuplicateCourse(DuplicateCourseException exception){
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Map.of("error", "DUPLICATE_COURSE_TITLE",
+                        "message", exception.getMessage()));
+    }
 }
