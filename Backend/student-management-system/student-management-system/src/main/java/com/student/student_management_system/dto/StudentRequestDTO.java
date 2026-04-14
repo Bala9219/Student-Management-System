@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.Set;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -24,6 +26,6 @@ public class StudentRequestDTO {
     @NotNull(message = "Age is required")
     private Integer age;
 
-    @NotNull(message = "Course Id cannot be null")
-    private Long courseId;
+    @NotNull(message = "Course Ids cannot be null")
+    private Set<Long> courseIds;
 }

@@ -2,6 +2,8 @@ package com.student.student_management_system.dto;
 
 import lombok.*;
 
+import java.util.Set;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -13,6 +15,7 @@ public class StudentResponseDTO {
     private String name;
     private String email;
     private Integer age;
-    private Long courseId;
-    private String courseTitle;
+
+    private Set<Long> courseIds;
+    private Set<String> courseTitles;
 }

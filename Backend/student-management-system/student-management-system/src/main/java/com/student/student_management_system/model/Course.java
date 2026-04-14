@@ -34,7 +34,7 @@ public class Course {
     @Column(nullable = false)
     private Long fee;
 
-    @ManyToMany(mappedBy = "courses")
-    private Set<Student> students = new HashSet<>();
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Enrollment> enrollments = new HashSet<>();
 
 }

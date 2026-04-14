@@ -22,4 +22,6 @@ public interface StudentService {
     Page<StudentResponseDTO> searchStudents(String keyword, Pageable pageable);
 
     void enrollCourse(Long studentId, Long courseId);
+
+    void unenrollCourse(Long studentId, Long courseId);
 }

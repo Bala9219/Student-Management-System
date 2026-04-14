@@ -17,13 +17,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class StudentServiceImpl implements StudentService{
 
     private final StudentRepository studentRepository;
-
     private final CourseRepository courseRepository;
 
     @Override
@@ -32,11 +34,16 @@ public class StudentServiceImpl implements StudentService{
             throw new DuplicateMailException(dto.getEmail());
         }
 
-        Course course = courseRepository.findById(dto.getCourseId())
-                .orElseThrow(() -> new CourseNotFoundException(dto.getCourseId()));
+        Set<Course> courses = new HashSet<>();
+
+        for(Long courseId : dto.getCourseIds()){
+            Course course = courseRepository.findById(courseId)
+                    .orElseThrow(() -> new CourseNotFoundException(courseId));
+            courses.add(course);
+        }
 
         Student student = StudentMapper.toEntity(dto);
-        student.setCourse(course);
+        student.setCourses(courses);
         return StudentMapper.toDTO(studentRepository.save(student));
     }
 
@@ -63,13 +70,18 @@ public class StudentServiceImpl implements StudentService{
             throw new DuplicateMailException(dto.getEmail());
         }
 
-        Course course = courseRepository.findById(dto.getCourseId())
-                        .orElseThrow(() -> new CourseNotFoundException(dto.getCourseId()));
+        Set<Course> courses = new HashSet<>();
+
+        for(Long courseId : dto.getCourseIds()){
+            Course course = courseRepository.findById(courseId)
+                    .orElseThrow(() -> new CourseNotFoundException(courseId));
+            courses.add(course);
+        }
 
         existing.setName(dto.getName());
         existing.setEmail(dto.getEmail());
         existing.setAge(dto.getAge());
-        existing.setCourse(course);
+        existing.setCourses(courses);
 
         return StudentMapper.toDTO(studentRepository.save(existing));
     }
@@ -110,6 +122,22 @@ public class StudentServiceImpl implements StudentService{
         }
 
         student.getCourses().add(course);
+        studentRepository.save(student);
+    }
+
+    @Override
+    public void unenrollCourse(Long studentId, Long courseId) {
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new StudentNotFoundException(studentId));
+
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new CourseNotFoundException(courseId));
+
+        if(!student.getCourses().contains(course)){
+            throw new RuntimeException("Student not enrolled in this course");
+        }
+
+        student.getCourses().remove(course);
         studentRepository.save(student);
     }
 }

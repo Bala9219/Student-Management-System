@@ -18,6 +18,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/students")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000")
 public class StudentController {
 
     private final StudentService studentService;
@@ -74,5 +75,17 @@ public class StudentController {
                 "pageSize", page.getSize()
         );
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{studentId}/enroll/{courseId}")
+    public ResponseEntity<String> enrollCourse(@PathVariable Long studentId, @PathVariable Long courseId){
+        studentService.enrollCourse(studentId, courseId);
+        return ResponseEntity.ok("Student enrolled successfully");
+    }
+
+    @DeleteMapping("/{studentId}/unenroll/{courseId}")
+    public ResponseEntity<String> unenrollCourse(@PathVariable Long studentId, @PathVariable Long courseId){
+        studentService.unenrollCourse(studentId, courseId);
+        return ResponseEntity.ok("Student unenrolled Successfully");
     }
 }

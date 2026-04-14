@@ -39,10 +39,11 @@ public class Student {
     private Integer age;
 
     @ManyToMany
-    @JoinTable(
-            name = "student_courses",
-            joinColumns = @JoinColumn(name = "student_id"),
-            inverseJoinColumns = @JoinColumn(name = "course_id")
-    )
+    @JoinTable(name = "student_courses",
+                joinColumns = @JoinColumn(name = "student_id"),
+                inverseJoinColumns = @JoinColumn(name = "course_id"))
     private Set<Course> courses = new HashSet<>();
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Enrollment> enrollments = new HashSet<>();
 }

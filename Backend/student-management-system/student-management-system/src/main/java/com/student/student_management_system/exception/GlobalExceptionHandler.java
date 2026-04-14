@@ -50,4 +50,9 @@ public class GlobalExceptionHandler {
                 .body(Map.of("error", "DUPLICATE_COURSE_TITLE",
                         "message", exception.getMessage()));
     }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<String> handleIllegalState(IllegalStateException exception){
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }

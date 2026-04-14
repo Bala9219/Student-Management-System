@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -23,6 +24,7 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter(){
@@ -36,6 +38,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/courses/**").permitAll()
                         .requestMatchers("/api/courses/**").hasRole("ADMIN")
+                        .requestMatchers("/api/enrollments/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers("/api/students/**")
                         .hasAnyRole("ADMIN", "USER")
                         .anyRequest().authenticated()
@@ -51,7 +54,8 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
 
-        builder.userDetailsService(userDetailsService);
+        builder.userDetailsService(userDetailsService)
+                .passwordEncoder(passwordEncoder);
 
         return builder.build();
     }
